@@ -1,0 +1,15 @@
+name: covid-consensus-pipeline
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - bcftools
+  - csvtk
+  - htsbox
+  - minimap2
+  - snp-dists
+  - tabix
+  - pandas
+  - pyvcf
+  - pybedtools
