@@ -11,8 +11,15 @@ RUNNAME="nml"
 PDF=false
 RUN_SNP_TREE=true
 
+# Envs needed
+envArray=(covid-consensus-pipeline ncov-qc)
+
 HELP="""
-Run ncov-tools on fasta files and combine results into singular QC csv file
+Run ncov-tools on fasta files and combine the results into singular QC csv file
+
+Usage
+    bash $SCRIPTPATH/run_covid_consensus.sh -d <Path/to/Consensus_Dir/> <OPTIONAL FLAGS>
+
 Flags:
     -d  --directory :  Path to directory containing fasta files
     -m  --metadata  :  (OPTIONAL) Path to TSV metadata file containing at minimum the columns 'sample', 'date', and 'ct'
@@ -93,6 +100,17 @@ fi
 ### Conda ###
 #############
 eval "$(conda shell.bash hook)"
+
+for ENV in ${envArray[@]}; do
+    # Check if env exists in user envs. NOTE if it is a env not listed in `conda env list` it will error out
+    if [[ $(conda env list | awk '{print $1}' | grep "^$ENV"'$') ]]; then
+        :
+    else
+        echo "ERROR: Conda ENV '$ENV' was not found. Please follow the README instructions and install the environment"
+        exit 1
+    fi
+done
+
 conda activate covid-consensus-pipeline
 ### End Conda ###
 
@@ -213,7 +231,7 @@ if [ -f "./ncov-tools/qc_analysis/${RUNNAME}_aligned.fasta" ];
 then
     snp-dists ./ncov-tools/qc_analysis/${RUNNAME}_aligned.fasta > matrix.tsv
 else
-    echo "No ./ncov-tools/qc_analysis/${RUNNAME}_aligned.fasta, skipping the snp-dist check"
+    echo "No ./ncov-tools/qc_analysis/${RUNNAME}_aligned.fasta file, skipping the snp-dist check"
 fi
 
 # Done
